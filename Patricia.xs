@@ -199,6 +199,21 @@ patricia_walk_inorder_perl(patricia_node_t *node, SV *coderef) {
         if (NULL != coderef) {
             PUSHMARK(SP);
             XPUSHs(sv_mortalcopy((SV *)node->data));
+            if (node->prefix->family == AF_INET) {
+                XPUSHs(sv_2mortal(
+                    newSVpvf("%s/%d",
+                        inet_ntoa(node->prefix->add.sin),
+                        node->prefix->bitlen
+                    )
+                ));
+#ifdef HAVE_IPV6
+            } else {
+                char buff[40]; // Longest possible IPv6
+                buff[39] = '\0';
+                inet_ntop(node->prefix->family, &node->prefix->add.sin6, buff, 39);
+                XPUSHs(sv_2mortal(newSVpvf("%s/%d", buff, node->prefix->bitlen)));
+#endif
+            }
             PUTBACK;
             perl_call_sv(coderef, G_VOID|G_DISCARD);
             SPAGAIN;
@@ -336,6 +351,21 @@ climb(tree, ...)
 		   if (NULL != func) {
 		      PUSHMARK(SP);
 		      XPUSHs(sv_mortalcopy((SV *)node->data));
+		      if (node->prefix->family == AF_INET) {
+		         XPUSHs(sv_2mortal(
+		            newSVpvf("%s/%d",
+		               inet_ntoa(node->prefix->add.sin),
+		               node->prefix->bitlen
+		            )
+		         ));
+#ifdef HAVE_IPV6
+		      } else {
+		         char buff[40]; // Longest possible IPv6
+		         buff[39] = '\0';
+		         inet_ntop(node->prefix->family, &node->prefix->add.sin6, buff, 39);
+		         XPUSHs(sv_2mortal(newSVpvf("%s/%d", buff, node->prefix->bitlen)));
+#endif
+		      }
 		      PUTBACK;
 		      perl_call_sv(func, G_VOID|G_DISCARD);
 		      SPAGAIN;

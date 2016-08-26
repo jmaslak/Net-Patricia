@@ -488,8 +488,9 @@ so.  It performs a non-recursive, "preorder" traversal.
 
 The CODEREF argument is optional.  It is a perl code reference used to
 specify a user-defined subroutine to be called when visiting each
-node.  The node's user data will be passed as the sole argument to that
-subroutine.
+node.  The node's user data will be passed as the first argument to that
+subroutine, while a string representation of the prefix will be passed
+as the second.
 
 This method returns the number of nodes successfully visited while
 climbing the Trie.  That is, without a CODEREF argument, it simply
@@ -514,8 +515,9 @@ does so.  That is, it performs an "inorder" traversal.
 
 The CODEREF argument is optional.  It is a perl code reference used to
 specify a user-defined subroutine to be called when visiting each
-node.  The node's user data will be passed as the sole argument to that
-subroutine.
+node.  The node's user data will be passed as the first argument to that
+subroutine, while a string representation of the prefix will be passed
+as the second.
 
 This method returns the number of nodes successfully visited while
 climbing the Trie.  That is, without a CODEREF argument, it simply
