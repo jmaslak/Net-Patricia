@@ -210,7 +210,7 @@ patricia_walk_inorder_perl(patricia_node_t *node, SV *coderef) {
             } else {
                 char buff[40]; // Longest possible IPv6
                 buff[39] = '\0';
-                inet_ntop(node->prefix->family, &node->prefix->add.sin6, buff, 39);
+                inet_ntop(node->prefix->family, &node->prefix->add.sin6, buff, 40);
                 XPUSHs(sv_2mortal(newSVpvf("%s/%d", buff, node->prefix->bitlen)));
 #endif
             }
@@ -239,6 +239,17 @@ double
 constant(name,arg)
 	char *		name
 	int		arg
+
+int
+have_ipv6()
+	CODE:
+#ifdef HAVE_IPV6
+		RETVAL = 1;
+#else
+		RETVAL = 0;
+#endif
+	OUTPUT:	
+		    RETVAL
 
 Net::Patricia
 _new(size)
@@ -361,8 +372,7 @@ climb(tree, ...)
 #ifdef HAVE_IPV6
 		      } else {
 		         char buff[40]; // Longest possible IPv6
-		         buff[39] = '\0';
-		         inet_ntop(node->prefix->family, &node->prefix->add.sin6, buff, 39);
+		         inet_ntop(node->prefix->family, &node->prefix->add.sin6, buff, 40);
 		         XPUSHs(sv_2mortal(newSVpvf("%s/%d", buff, node->prefix->bitlen)));
 #endif
 		      }

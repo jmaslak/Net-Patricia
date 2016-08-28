@@ -108,19 +108,22 @@ is(@a, 2, "removing cidr block");
 
 undef $t;
 
-$t = new Net::Patricia(AF_INET6);
+SKIP: {
+    skip "No IPv6", 4 if !Net::Patricia::have_ipv6();
+    $t = new Net::Patricia(AF_INET6);
 
-isa_ok($t, "Net::Patricia::AF_INET6", "constructing a Net::Patrica::AF_INET6");
+    isa_ok($t, "Net::Patricia::AF_INET6", "constructing a Net::Patrica::AF_INET6");
 
-ok($t->add_string("2001:220::/35", "hello, world"), "adding 2001:220::/35");
+    ok($t->add_string("2001:220::/35", "hello, world"), "adding 2001:220::/35");
 
-$thawed = Storable::thaw(Storable::nfreeze($t));
-for my $o ({ name => "original", obj => $t }, { name => "thawed", obj => $thawed }) {
-    is($o->{obj}->match_string("2001:220::/128"), "hello, world", "$o->{name}: looking for 2001:220::/128");
+    $thawed = Storable::thaw(Storable::nfreeze($t));
+    for my $o ({ name => "original", obj => $t }, { name => "thawed", obj => $thawed }) {
+        is($o->{obj}->match_string("2001:220::/128"), "hello, world", "$o->{name}: looking for 2001:220::/128");
+    }
+
+    undef $t;
+    undef $thawed;
 }
-
-undef $t;
-undef $thawed;
 
 done_testing();
 

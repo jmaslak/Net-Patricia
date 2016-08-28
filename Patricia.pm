@@ -54,7 +54,11 @@ sub new {
   }
 
   if ($type == AF_INET6) {
-    return bless _new(128), 'Net::Patricia::AF_INET6';
+    if (Net::Patricia::have_ipv6()) {
+      return bless _new(128), 'Net::Patricia::AF_INET6';
+    } else {
+      croak('IPv6 is not available on this platform');
+    }
   }
 
   croak "new: unimplemented type";
